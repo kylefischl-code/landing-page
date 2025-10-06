@@ -1,156 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>KareBlazers | When Home Care Cannot Fail</title>
   <style>
-    body { font-family: Arial, sans-serif; margin:0; padding:0; color:#1E3A5F; line-height:1.6; }
-    header { background:#1E3A5F; color:white; padding:40px 20px; text-align:center; }
-    header h1 { margin:0; font-size:2.5em; }
-    header p { margin-top:10px; font-size:1.2em; }
-    section { padding:40px 20px; max-width:900px; margin:auto; }
-    h2 { color:#B9975B; margin-bottom:15px; }
-    ul { list-style:none; padding:0; }
-    ul li::before { content:"✔ "; color:#B9975B; }
-    .cta { text-align:center; margin:40px 0; }
-    .cta a { background:#B9975B; color:white; padding:15px 30px; text-decoration:none; border-radius:5px; font-weight:bold; }
-    .process { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px,1fr)); gap:15px; }
-    .faq { margin:20px 0; }
-    .faq h3 { cursor:pointer; margin:10px 0; background:#f4f4f4; padding:10px; border-radius:5px; }
-    .faq p { display:none; margin:0; padding:0 10px 10px; }
-    footer { background:#1E3A5F; color:white; padding:20px; text-align:center; font-size:0.9em; }
+    :root{
+      /* Brand palette (navy + gold) taken from shared materials */
+      --ink:#1E3A5F;         /* deep navy */
+      --accent:#B9975B;      /* warm gold */
+      --muted:#F5F7FA;       /* very light grey/blue */
+      --line:#E5E7EB;        /* light divider */
+      --white:#FFFFFF;
+      --maxw:1000px;
+      --r:14px;
+    }
+    *{box-sizing:border-box}
+    body{font-family:Arial,Helvetica,sans-serif;margin:0;color:var(--ink);line-height:1.6;background:var(--white)}
+    a{color:var(--accent)}
+    header{background:var(--ink);color:var(--white);padding:56px 20px;text-align:center}
+    header h1{margin:0 0 6px 0;font-size:42px;letter-spacing:.2px}
+    header p{margin:6px 0;font-size:18px;opacity:.95}
+    .meta{opacity:.9;font-size:15px}
+    section{padding:40px 20px;max-width:var(--maxw);margin:auto}
+    section+section{border-top:1px solid var(--line)}
+    h2{color:var(--accent);margin:0 0 14px 0;font-size:26px;letter-spacing:.2px}
+    h3{margin:16px 0 8px 0;font-size:20px}
+    .lede{font-size:18px;margin:6px 0 14px 0}
+    /* Lists */
+    ul{list-style:disc;padding-left:1.2rem;margin:0}
+    li{margin:6px 0}
+    .checklist{list-style:none;padding:0;margin:0}
+    .checklist li{position:relative;padding-left:1.5rem}
+    .checklist li::before{content:"✔";color:var(--accent);position:absolute;left:0;top:.15rem;width:1.1rem;text-align:left}
+    .two-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px 28px}
+    .three-col{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px 20px}
+    .card{background:var(--muted);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+    .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:6px 12px;margin:4px 8px 0 0;background:#fff}
+    /* Process */
+    .process{counter-reset:step;list-style:none;padding:0;margin:0;display:grid;gap:12px}
+    .process li{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start;background:var(--muted);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
+    .process li::before{counter-increment:step;content:counter(step);background:var(--ink);color:#fff;width:32px;height:32px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-weight:700;line-height:1}
+    /* Accordions using native <details> for click reliability */
+    details{border:1px solid var(--line);border-radius:var(--r);background:#fff;overflow:hidden}
+    summary{list-style:none;cursor:pointer;padding:14px 16px;font-weight:700;color:var(--ink);position:relative}
+    summary::-webkit-details-marker{display:none}
+    details[open] summary{border-bottom:1px solid var(--line)}
+    details .content{padding:14px 16px;background:#FAFAFA}
+    summary::after{content:"+";position:absolute;right:16px;top:50%;transform:translateY(-50%);font-weight:700}
+    details[open] summary::after{content:"−"}
+    .faq-grid{display:grid;gap:12px}
+    /* CTA */
+    .cta{text-align:center;margin:28px 0 0}
+    .btn{display:inline-block;background:var(--accent);color:#fff;padding:14px 24px;text-decoration:none;border-radius:10px;font-weight:700;transition:transform .06s ease-in,box-shadow .12s ease}
+    .btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.08)}
+    /* Testimonials */
+    .testimonials{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+    .tcard{background:var(--ink);color:#fff;padding:18px;border-radius:16px;border:1px solid var(--accent);box-shadow:0 2px 8px rgba(0,0,0,.08);display:flex;flex-direction:column;min-height:200px}
+    .tcard blockquote{margin:0 0 10px 0}
+    .tcard .stars{color:var(--accent);font-size:1.02em;letter-spacing:2px;margin-bottom:6px}
+    .tcard figcaption{color:var(--accent);font-weight:700;margin-top:auto}
+    footer{background:var(--ink);color:var(--white);padding:22px;text-align:center;font-size:.95em}
+    /* Badges */
+    .badges{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
+    .badge{background:#fff;border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:8px 12px}
+    /* Mobile */
+    @media (max-width:640px){
+      header{padding:40px 16px}
+      header h1{font-size:34px}
+      header p{font-size:16px}
+      section{padding:28px 16px}
+      .process li{grid-template-columns:36px 1fr;padding:12px 14px}
+      .process li::before{width:28px;height:28px;font-size:14px}
+      .btn{width:100%;text-align:center}
+      ul{padding-left:1rem}
+      h2{font-size:22px}
+    }
   </style>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const faqs = document.querySelectorAll(".faq h3");
-      faqs.forEach(faq => {
-        faq.addEventListener("click", () => {
-          faq.nextElementSibling.style.display = faq.nextElementSibling.style.display === "block" ? "none" : "block";
-        });
-      });
-    });
-  </script>
 </head>
 <body>
 
 <header>
   <h1>KareBlazers</h1>
   <p>When Home Care Cannot Fail</p>
-  <p>0 missed shifts • 42+ month client stays • 36+ month caregiver tenure</p>
-  <div class="cta"><a href="#referral">Refer a Client Now</a></div>
+  <p class="meta">0 missed shifts • 42+ month average client stay • 36+ month caregiver tenure • Turnover 10.5% vs. 65.5% industry</p>
+  <div class="cta"><a class="btn" href="#start">Start in 24 Hours</a></div>
 </header>
 
 <section>
-  <h2>Why Families Choose KareBlazers</h2>
-  <ul>
-    <li>0 missed shifts — 14 straight months / 5,460+ visits</li>
-    <li>42+ months average client stay</li>
-    <li>36+ months caregiver tenure</li>
-    <li>10.5% caregiver turnover vs. 65% industry average</li>
+  <h2>Why Families & Professionals Choose Us</h2>
+  <ul class="checklist two-col">
+    <li>Care can begin within 24 hours (often same day)</li>
+    <li>Predictable schedules with the same trusted faces</li>
+    <li>Shift Stability System (3 layers) prevents gaps</li>
+    <li>Transparent updates at 48 hours, 7 days, and ongoing</li>
   </ul>
-  <blockquote>Calm days. Predictable nights. No surprises.</blockquote>
-</section>
-
-<section>
-  <h2>The Shift Stability System (SSS)</h2>
-  <ul>
-    <li><strong>Primary Caregiver</strong> — anchors daily routine & trust</li>
-    <li><strong>Weekly Wellness Aide</strong> — check-ins, transport, updates, back-up</li>
-    <li><strong>Care Supervisor</strong> — oversight every 60 days</li>
-  </ul>
-</section>
-
-<section>
-  <h2>Who We’re Best For</h2>
-  <ul>
-    <li>Dementia, neuro, or hospice support</li>
-    <li>Post-surgical recovery & two-person assist</li>
-    <li>High-hour or live-in coverage (min 20 hrs/wk; typical 56+)</li>
-    <li>Families with significant assets who cannot afford disruptions</li>
-  </ul>
-</section>
-
-<section>
-  <h2>Our Services</h2>
-  <ul>
-    <li><strong>Daily Living Support</strong> — personal care, meals, companionship</li>
-    <li><strong>Specialized Care</strong> — dementia, hospice, neuro, post-surgical</li>
-    <li><strong>Continuity & Oversight</strong> — 24/7, supervisor visits, wellness updates</li>
-    <li><strong>Transport & Advocacy</strong> — $125/trip with in-visit notes</li>
-  </ul>
-</section>
-
-<section>
-  <h2>Privacy & Discretion</h2>
-  <ul>
-    <li>HIPAA-trained caregivers</li>
-    <li>No loud branding in homes or at appointments</li>
-    <li>Respect for household staff & routines</li>
-    <li>Secure, time-stamped shift logs</li>
-  </ul>
-</section>
-
-<section>
-  <h2>Our Process</h2>
-  <div class="process">
-    <div>1. Referral received (call/email/QR)</div>
-    <div>2. Consult within 24 hours (often same day)</div>
-    <div>3. Care plan & safety priorities set</div>
-    <div>4. Primary & back-up caregiver introduced</div>
-    <div>5. First shift begins</div>
-    <div>6. Updates at 48 hours & 7 days</div>
+  <div class="badges">
+    <div class="badge">DOH License #83223601</div>
+    <div class="badge">Licensed • Bonded • Insured • W‑2 Employees</div>
   </div>
 </section>
 
-<section>
+<section id="sss">
+  <h2>Shift Stability System — Reliability by Design</h2>
+  <p class="lede">Our three-layer model keeps care steady and on time, even when life happens.</p>
+  <div class="two-col">
+    <div class="card">
+      <h3>How Coverage Works</h3>
+      <ul>
+        <li><strong>Primary Caregiver</strong> — your consistent, familiar anchor.</li>
+        <li><strong>Team Lead</strong> — provides check‑ins, transport if requested, and steps in immediately if the Primary is unavailable.</li>
+        <li><strong>Care Supervisor</strong> — oversight and coaching with a 90‑day formal review cycle.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Late‑Arrival Protocol</h3>
+      <ul>
+        <li>We monitor real‑time clock‑ins for every shift.</li>
+        <li>If a caregiver is delayed, you receive an immediate ETA text or call.</li>
+        <li>Delay &gt; 10 minutes? The Team Lead covers or dispatches a trained back‑up so the shift stays on track.</li>
+        <li>You always know <em>who</em> is coming and <em>when</em>.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="scheduling">
+  <h2>Scheduling Windows</h2>
+  <p class="lede">Choose predictable blocks that match your routine. Fixed times support continuity and reliable coverage.</p>
+  <div class="three-col">
+    <div class="card"><strong>8 AM – 12 PM</strong><br/>Morning support</div>
+    <div class="card"><strong>1 PM – 5 PM</strong><br/>Afternoon support</div>
+    <div class="card"><strong>8 AM – 5 PM</strong><br/>Full‑day day shift</div>
+    <div class="card"><strong>5 PM – 10 PM</strong><br/>Evening support</div>
+    <div class="card"><strong>10 PM – 8 AM</strong><br/>Overnight</div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <strong>Minimum Schedule:</strong> 20 hours/week.
+    <p style="margin:8px 0 0">
+      Minimums allow us to assign a dedicated team, keep the same faces on your schedule, and maintain guaranteed coverage. Consistent hours reduce turnover, preserve routines, and improve outcomes.
+    </p>
+  </div>
+</section>
+
+<section id="services">
+  <h2>Services at a Glance</h2>
+  <div class="faq-grid">
+    <details>
+      <summary>Daily Living Support</summary>
+      <div class="content">Personal care, bathing, dressing, meals, transfers &amp; mobility, light housekeeping, and companionship.</div>
+    </details>
+    <details>
+      <summary>Medication &amp; Health Support</summary>
+      <div class="content">Medication reminders, appointment escort, and concise visit notes to keep family and clinicians aligned.</div>
+    </details>
+    <details>
+      <summary>Specialized Care</summary>
+      <div class="content">Dementia support, non‑medical hospice, post‑surgical recovery, and two‑person assists with safe staffing.</div>
+    </details>
+    <details>
+      <summary>Continuity &amp; Oversight</summary>
+      <div class="content">Structured relief, weekly updates, and 24/7 coverage. Supervisor check‑ins at 48h, 7d, and formal 90‑day reviews.</div>
+    </details>
+  </div>
+</section>
+
+<section id="quality">
+  <h2>Caregiver Standards (W‑2 Employees)</h2>
+  <ul class="two-col">
+    <li>Thorough interviews &amp; professional reference verification</li>
+    <li>Criminal background checks &amp; TB screening</li>
+    <li>Initial training and ongoing training</li>
+    <li>6‑month performance appraisals</li>
+    <li>Payroll taxes, Workers’ Comp, General &amp; Professional Liability</li>
+    <li>Active supervision and field coaching</li>
+  </ul>
+</section>
+
+<section id="start">
+  <h2>How Care Begins</h2>
+  <ol class="process">
+    <li>Initial contact (call, email, or referral form)</li>
+    <li>In‑home assessment within 24 hours (often same day)</li>
+    <li>Care plan finalized with the family</li>
+    <li>Meet your Primary Caregiver and Team Lead</li>
+    <li>First shift begins</li>
+    <li>Updates at 48 hours &amp; 7 days; ongoing communication thereafter</li>
+  </ol>
+  <div class="cta" style="margin-top:18px">
+    <a class="btn" href="https://form.jotform.com/252675979187075" target="_blank" rel="noopener">Refer in 60 Seconds</a>
+  </div>
+</section>
+
+<section id="faqs">
   <h2>FAQs</h2>
-  <div class="faq">
-    <h3>Do you miss shifts?</h3>
-    <p>No. 0 missed shifts in 14 months.</p>
-  </div>
-  <div class="faq">
-    <h3>Will we see new faces every week?</h3>
-    <p>No. You’ll have a consistent primary caregiver and the same support team.</p>
-  </div>
-  <div class="faq">
-    <h3>How fast can you start?</h3>
-    <p>Often today; always within 24 hours.</p>
-  </div>
-  <div class="faq">
-    <h3>Do you handle dementia and two-person assists?</h3>
-    <p>Yes — structured safe staffing with oversight.</p>
+  <div class="faq-grid">
+    <details>
+      <summary>Do you really never miss shifts?</summary>
+      <div class="content">We are engineered for reliability. We have maintained <strong>0 missed shifts</strong> over 14+ months by using layered coverage, real‑time monitoring, and proactive communication.</div>
+    </details>
+    <details>
+      <summary>What if someone is running late?</summary>
+      <div class="content">You’ll receive an immediate ETA. If the delay exceeds 10 minutes, the Team Lead covers or dispatches a trained back‑up so your schedule remains intact.</div>
+    </details>
+    <details>
+      <summary>Is 24/7 or live‑in available?</summary>
+      <div class="content">Yes. Typical cases are 56+ hours per week; our minimum is 20 hours/week to support stable staffing and guaranteed coverage.</div>
+    </details>
+    <details>
+      <summary>Are caregivers employees?</summary>
+      <div class="content">Yes. All caregivers are W‑2 employees. We handle payroll taxes, Workers’ Comp, insurance, training, and supervision so you get consistent standards and accountability.</div>
+    </details>
+    <details>
+      <summary>Rates &amp; billing</summary>
+      <div class="content">We provide written rates and scheduling options before services begin and issue clear, itemized invoices. We can supply documentation for LTC insurance.</div>
+    </details>
   </div>
 </section>
 
-<section>
-  <h2>Credentials & Compliance</h2>
-  <ul>
-    <li>PA License #: 83223601</li>
-    <li>Workers’ Comp • General Liability • Professional Liability</li>
-    <li>Bonded & insured</li>
-    <li>Background checks, HIPAA training, 6-month staff reviews</li>
-  </ul>
-</section>
-
-<section>
-  <h2>Testimonials</h2>
-  <blockquote>“From hospital to home, nothing slipped.”</blockquote>
-  <blockquote>“Same familiar faces — every week.”</blockquote>
-  <blockquote>“We finally stopped worrying and started living again.”</blockquote>
-</section>
-
-<section id="referral">
-  <h2>Refer a Client</h2>
-  <p>We respond within 24 hours — often same day.</p>
-  <div class="cta">
-    <a href="https://form.jotform.com/252675979187075" target="_blank">➡️ Submit Referral Now</a>
+<section id="testimonials">
+  <h2>What Families Say</h2>
+  <div class="testimonials">
+    <figure class="tcard">
+      <div class="stars">★★★★★</div>
+      <blockquote>“Our caregivers became family. They were always on time and truly cared for my husband.”</blockquote>
+      <figcaption>— Lee Ann K.</figcaption>
+    </figure>
+    <figure class="tcard">
+      <div class="stars">★★★★★</div>
+      <blockquote>“Flexible, dependable, and the updates gave us peace of mind. The pressure is gone.”</blockquote>
+      <figcaption>— Paige C.</figcaption>
+    </figure>
+    <figure class="tcard">
+      <div class="stars">★★★★★</div>
+      <blockquote>“24/7 support without a single gap. We always knew who was coming and when.”</blockquote>
+      <figcaption>— Family Client</figcaption>
+    </figure>
   </div>
+</section>
+
+<section id="contact">
+  <h2>Contact</h2>
+  <p><strong>24/7 Line:</strong> <a href="tel:14846327369">484‑632‑7369</a><br/>
+     <strong>Email:</strong> <a href="mailto:kylefischl@independentkareblazers.com">kylefischl@independentkareblazers.com</a></p>
 </section>
 
 <footer>
-  <p>© KareBlazers — Discreet Support. Steady Presence. | Call 24/7: 484-632-7369</p>
+  <p>© KareBlazers — Discreet Support. Steady Presence.</p>
 </footer>
 
 </body>
 </html>
+
