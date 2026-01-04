@@ -1,48 +1,463 @@
-from pathlib import Path
-import re
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KareBlazers — When Home Care Cannot Fail</title>
+<meta name="description" content="KareBlazers: reliable home care with zero missed shifts, long caregiver tenure, and a proven Shift Stability System.">
+<style>
+  :root{
+    /* Blue + Gray system */
+    --blue:#1F5FA9;
+    --blue-dark:#0F2F56;
+    --gray-900:#1F2933;
+    --gray-700:#4B5563;
+    --gray-100:#F3F5F7;
+    --gray-200:#E3E7ED;
+    --white:#FFFFFF;
 
-src_path = Path("/mnt/data/kareblazers_after_tweaks_FIXED.html")
-html = src_path.read_text(encoding="utf-8")
+    --accent:var(--blue);
+    --ink:var(--gray-900);
+    --muted:var(--gray-100);
+    --line:var(--gray-200);
 
-# 1) Remove logo image tag in hero
-html = re.sub(r'\s*<img\s+class="logo"[^>]*>\s*', '\n', html, count=1, flags=re.I)
+    --maxw:1100px;
+    --r:14px;
+  }
 
-# 2) Remove Scheduling Windows section (id="schedule")
-html = re.sub(r'\s*<section id="schedule">.*?</section>\s*', '\n', html, flags=re.S)
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Arial,Helvetica,sans-serif;
+    color:var(--ink);
+    background:var(--white);
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+  }
 
-# 2b) Remove nav link to scheduling section
-html = re.sub(r'\s*<a href="#schedule">Scheduling</a>\s*', '\n', html)
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  a:focus-visible, summary:focus-visible, .btn:focus-visible{
+    outline:3px solid rgba(31,95,169,.35);
+    outline-offset:3px;
+    border-radius:10px;
+  }
 
-# 3) Remove "56+ ..." references throughout, while keeping sentence readable.
-replacements = [
-    # "High-hour care (typical 56+ hrs/wk) or live-in" -> "High-hour care or live-in"
-    (r'High-hour care\s*\(typical\s*56\+\s*hrs?/wk\)\s*or\s*live-in', 'High-hour care or live-in'),
-    # "typical plans are 56+" or "typical plans are 56+)." etc.
-    (r'\s*\(typical plans are\s*56\+\)\s*', ' '),
-    (r'\s*\(typical plans are\s*56\+\.\)\s*', ' '),
-    # "56+ hrs/wk" anywhere
-    (r'\b56\+\s*hrs?/wk\b', ''),
-    (r'\b56\+\s*hours?/week\b', ''),
-    (r'\b56\s*hours?/week\b', ''),
-]
-for pat, rep in replacements:
-    html = re.sub(pat, rep, html, flags=re.I)
+  .wrap{max-width:var(--maxw);margin:auto;padding:0 20px}
 
-# Clean up double spaces and stray punctuation spacing from removals
-html = re.sub(r'\s{2,}', ' ', html)
-html = re.sub(r'\s+\n', '\n', html)
-html = re.sub(r'\n{3,}', '\n\n', html)
+  header{
+    background:var(--white);
+    color:var(--ink);
+    padding:16px 0;
+    border-bottom:1px solid var(--line);
+  }
+  nav{display:flex;gap:18px;align-items:center;justify-content:center;flex-wrap:wrap}
+  nav a{color:var(--blue-dark);text-decoration:none;opacity:.92;font-weight:600}
+  nav a:hover{opacity:1;text-decoration:underline}
 
-# In case we removed content leaving "Minimum: 20 hours/week ." fix spacing
-html = html.replace("Minimum: 20 hours/week .", "Minimum: 20 hours/week.")
-html = html.replace("Minimum: 20 hours/week  Exceptions", "Minimum: 20 hours/week. Exceptions")
+  .hero{
+    background:linear-gradient(180deg, var(--gray-100) 0%, var(--white) 70%);
+    color:var(--ink);
+    padding:48px 20px 56px;
+  }
+  .hero .wrap{display:grid;grid-template-columns:1fr;gap:18px;align-items:center}
+  .hero h1{margin:0 0 6px 0;font-size:38px;letter-spacing:.2px;color:var(--blue-dark)}
+  .hero p{margin:6px 0 0 0;font-size:18px;color:var(--gray-700)}
 
-# Hero layout: if no logo, avoid leftover grid spacing on wide screens by switching hero wrap to 1 column.
-# Update CSS grid-template-columns:auto 1fr -> 1fr
-html = re.sub(r'\.hero\s*\.wrap\{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center\}',
-              '.hero .wrap{display:grid;grid-template-columns:1fr;gap:18px;align-items:center}',
-              html)
+  .cta{margin-top:16px}
+  .btn{
+    display:inline-block;
+    background:var(--accent);
+    color:#fff;
+    text-decoration:none;
+    font-weight:800;
+    padding:12px 18px;
+    border-radius:10px;
+    box-shadow:0 6px 18px rgba(15,47,86,.12);
+  }
+  .btn:hover{filter:brightness(1.05);text-decoration:none}
+  .btn.secondary{
+    background:transparent;
+    color:var(--blue-dark);
+    border:2px solid rgba(15,47,86,.25);
+    box-shadow:none;
+  }
+  .btn.secondary:hover{
+    background:rgba(15,47,86,.06);
+    filter:none;
+    text-decoration:none;
+  }
 
-out_path = Path("/mnt/data/kareblazers_after_final.html")
-out_path.write_text(html, encoding="utf-8")
-str(out_path)
+  .statbar{background:var(--muted);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .statbar .wrap{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;padding:14px 20px}
+  .pill{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:10px 14px;
+    border-radius:999px;
+    white-space:nowrap;
+    color:#fff;
+    font-weight:800;
+    background:linear-gradient(180deg, #0B1E3A 0%, #0F2F56 100%);
+    border:1px solid rgba(255,255,255,.10);
+    text-decoration:none;
+    box-shadow:0 10px 24px rgba(11,30,58,.18);
+    cursor:pointer;
+    user-select:none;
+  }
+  .pill:hover{filter:brightness(1.05)}
+
+  section{padding:44px 0;border-bottom:1px solid var(--line)}
+  h2{color:var(--blue-dark);margin:0 0 14px 0;font-size:26px}
+  h3{margin:18px 0 8px 0;font-size:20px;color:var(--ink)}
+  p{margin:10px 0;color:var(--gray-700)}
+  ol, ul{color:var(--gray-700)}
+  .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+  .three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+
+  .card{
+    background:var(--muted);
+    border:1px solid var(--line);
+    border-radius:var(--r);
+    padding:18px;
+  }
+
+  ul{padding-left:1.1rem;margin:8px 0}
+  li{margin:6px 0}
+  .check{list-style:none;padding-left:0}
+  .check li{position:relative;padding-left:1.4rem}
+  .check li::before{content:"✔";color:var(--accent);position:absolute;left:0;top:.1rem}
+
+  .accordion{display:grid;gap:12px}
+  .acc{border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--white)}
+  .acc summary{
+    list-style:none;
+    cursor:pointer;
+    padding:14px 16px;
+    font-weight:800;
+    color:var(--blue-dark);
+    background:var(--white);
+  }
+  .acc summary::-webkit-details-marker{display:none}
+  .acc[open] summary{border-bottom:1px solid var(--line);background:var(--muted)}
+  .acc .content{padding:12px 16px 16px;color:var(--gray-700)}
+
+  #testimonials .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+  .testi{
+    background:var(--white);
+    color:var(--ink);
+    border-radius:16px;
+    border:1px solid var(--line);
+    padding:18px;
+    display:flex;
+    flex-direction:column;
+    min-height:210px;
+    box-shadow:0 10px 26px rgba(31,41,51,.06);
+  }
+  .stars{color:var(--accent);letter-spacing:2px;margin-bottom:8px}
+  .testi blockquote{margin:0 0 10px 0;color:var(--gray-700)}
+  .testi figcaption{color:var(--blue-dark);font-weight:800;margin-top:auto}
+
+  footer{
+    background:var(--blue-dark);
+    color:#fff;
+    text-align:center;
+    padding:18px;
+    font-size:14px;
+  }
+
+  @media (max-width:720px){
+    .hero .wrap{text-align:center}
+    .two,.three{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <nav>
+      <a href="#why">Why KareBlazers</a>
+      <a href="#sss">Shift Stability</a>
+      <a href="#services">Services</a>
+      <a href="#hiring">Caregiver Standards</a>
+      <a href="#process">How Care Starts</a>
+      <a href="#faqs">FAQs</a>
+      <a href="#testimonials">Reviews</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <h1>KareBlazers</h1>
+      <p>When Home Care Cannot Fail — steady caregivers, predictable schedules, and a team that doesn’t miss shifts.</p>
+      <div class="cta">
+        <a class="btn secondary" href="https://form.jotform.com/252675979187075" target="_blank" rel="noopener">Refer us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="statbar">
+  <div class="wrap">
+    <div class="pill" role="button" tabindex="0" data-scroll="#contact">0 missed shifts • 14+ months</div>
+    <div class="pill" role="button" tabindex="0" data-scroll="#contact">42+ month average client stay</div>
+    <div class="pill" role="button" tabindex="0" data-scroll="#contact">36+ month caregiver tenure</div>
+    <div class="pill" role="button" tabindex="0" data-scroll="#contact">10.5% turnover vs ~65% industry</div>
+  </div>
+</div>
+
+<section id="why">
+  <div class="wrap two">
+    <div>
+      <h2>Why Families Choose KareBlazers</h2>
+      <ul class="check">
+        <li>Fixed schedules with familiar caregivers</li>
+        <li>Real-time check-ins and proactive communication</li>
+        <li>Coverage confirmed before you’re notified of any change</li>
+        <li>24/7 availability — same-day starts whenever possible</li>
+      </ul>
+      <p><em>Calm days. Predictable nights. No surprises.</em></p>
+    </div>
+    <div class="card">
+      <h3>Who We’re Best For</h3>
+      <ul>
+        <li>Older adults who value routine and the same faces</li>
+        <li>Dementia support, mobility/transfer needs, recovery, or two-person assists</li>
+        <li>High-hour care or live-in</li>
+        <li>Families who cannot risk gaps in coverage</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="sss">
+  <div class="wrap two">
+    <div>
+      <h2>Shift Stability System (SSS)</h2>
+      <p><strong>Purpose:</strong> ensure guaranteed coverage and remove last-minute scrambling.</p>
+      <ol>
+        <li><strong>Primary Caregiver</strong> — your consistent, trusted anchor.</li>
+        <li><strong>Team Lead</strong> — provides check-ins, transport escort (when arranged), and steps in as backup.</li>
+        <li><strong>Care Supervisor</strong> — oversees quality and covers as the final layer.</li>
+      </ol>
+      <p><strong>Result:</strong> predictable schedules with built-in coverage.</p>
+    </div>
+    <div class="card">
+      <h3>Why We Have a 20-Hour Minimum</h3>
+      <ul>
+        <li><strong>Consistency for the client:</strong> enough weekly time to build routine and reduce confusion.</li>
+        <li><strong>Schedule stability:</strong> fixed blocks let us reserve your Primary + backup every week.</li>
+        <li><strong>Quality & retention:</strong> stable hours keep top caregivers on your team.</li>
+        <li><strong>Better outcomes:</strong> fewer handoffs, better follow-through, calmer days.</li>
+      </ul>
+      <p><em>Minimum: 20 hours/week. Exceptions considered for short-term transitions.</em></p>
+    </div>
+  </div>
+</section>
+
+<section id="services">
+  <div class="wrap">
+    <h2>Our Services</h2>
+    <div class="accordion">
+      <details class="acc">
+        <summary>Daily Living Support</summary>
+        <div class="content">Personal care, bathing, grooming, dressing, meals, hydration, light housekeeping, transfers, and mobility — all paced for dignity and safety.</div>
+      </details>
+      <details class="acc">
+        <summary>Companionship & Safety</summary>
+        <div class="content">Engagement, conversation, walks, safety cues, and wellness check-ins to reduce loneliness and maintain routine.</div>
+      </details>
+      <details class="acc">
+        <summary>Medication & Health Support</summary>
+        <div class="content">Medication reminders, appointment escort (when arranged), and concise visit notes so families and clinicians stay aligned.</div>
+      </details>
+      <details class="acc">
+        <summary>Specialized Care</summary>
+        <div class="content">Dementia support, recovery after hospital/rehab, non-medical hospice support, and two-person assists with structured staffing.</div>
+      </details>
+      <details class="acc">
+        <summary>Reviews every 90 days</summary>
+        <div class="content">48-hour and 7-day check-ins at start of care, then ongoing supervision with reviews at least every 90 days.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section id="hiring">
+  <div class="wrap two">
+    <div>
+      <h2>Caregiver Standards</h2>
+      <ul class="check">
+        <li>Thorough interviewing & professional reference checks</li>
+        <li>Criminal background checks & health screening (e.g., TB)</li>
+        <li>Initial training and ongoing education</li>
+        <li>Formal reviews every 6 months with in-home supervision</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Employees, Not Contractors</h3>
+      <ul>
+        <li>W-2 employment with payroll taxes handled</li>
+        <li>Workers’ compensation coverage</li>
+        <li>General & professional liability insurance</li>
+        <li>Bonded, insured, and continuously supervised</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="process">
+  <div class="wrap">
+    <h2>How Care Starts</h2>
+    <div class="three">
+      <div class="card">
+        <h3>1) Call Us</h3>
+        <p>Reach us any time and tell us what’s going on. We’ll get you moving fast.</p>
+      </div>
+      <div class="card">
+        <h3>2) Quick Needs Call</h3>
+        <p>Short call to confirm hours, location, routines, and the level of support needed.</p>
+      </div>
+      <div class="card">
+        <h3>3) In-Home Assessment (No Cost)</h3>
+        <p>We visit to understand safety, mobility, preferences, and what “a good day” looks like.</p>
+      </div>
+      <div class="card">
+        <h3>4) Care Plan Review</h3>
+        <p>You get a clear plan and schedule options. No surprises, no vague promises.</p>
+      </div>
+      <div class="card">
+        <h3>5) Meet &amp; Greet</h3>
+        <p>Meet your caregiver team so the first shift doesn’t feel like a blind date.</p>
+      </div>
+      <div class="card">
+        <h3>6) Agreement</h3>
+        <p>We finalize paperwork and start care. Simple, documented, and ready to run.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faqs">
+  <div class="wrap">
+    <h2>FAQs</h2>
+    <div class="accordion">
+      <details class="acc">
+        <summary>Do you really not miss shifts?</summary>
+        <div class="content">Yes. Our Shift Stability System is designed to prevent gaps. We have maintained <strong>0 missed shifts over 14+ months</strong>.</div>
+      </details>
+      <details class="acc">
+        <summary>Will we have the same caregiver?</summary>
+        <div class="content">Yes. Your Primary anchors the routine. Your Team Lead and Care Supervisor provide built-in coverage when needed.</div>
+      </details>
+      <details class="acc">
+        <summary>How fast can you start?</summary>
+        <div class="content">Often same day. We assess, confirm the plan, introduce your team, and begin the first shift — usually within 24 hours.</div>
+      </details>
+      <details class="acc">
+        <summary>Why a 20-hour weekly minimum?</summary>
+        <div class="content">It keeps the same caregivers on your case, stabilizes schedules, and delivers better outcomes with fewer handoffs.</div>
+      </details>
+      <details class="acc">
+        <summary>Are you licensed, bonded, and insured?</summary>
+        <div class="content">Yes. We are bonded and carry workers’ comp plus general & professional liability insurance.</div>
+      </details>
+      <details class="acc">
+        <summary>Do you support 24/7 and overnights?</summary>
+        <div class="content">Yes. We offer full-time, part-time, overnights, and live-in arrangements.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section id="testimonials">
+  <div class="wrap">
+    <h2>What Families Say</h2>
+    <div class="grid">
+      <figure class="testi">
+        <div class="stars">★★★★★</div>
+        <blockquote>“Outstanding! Kyle worked with us and provided excellent service. Special thanks to Joanna, Sely, Benjie and Madeline — professional, reliable, and truly caring.”</blockquote>
+        <figcaption>— Ann Troxell</figcaption>
+      </figure>
+      <figure class="testi">
+        <div class="stars">★★★★★</div>
+        <blockquote>“I am so very glad I worked with Kyle and KareBlazers! Our caregivers became family. Very few call outs, always on time, and they truly cared for my husband.”</blockquote>
+        <figcaption>— Lee Ann Kriner</figcaption>
+      </figure>
+      <figure class="testi">
+        <div class="stars">★★★★★</div>
+        <blockquote>“Flexible, dependable, and they treated my mother like family. The pressure of finding help was lifted.”</blockquote>
+        <figcaption>— Paige Capofari</figcaption>
+      </figure>
+      <figure class="testi">
+        <div class="stars">★★★★★</div>
+        <blockquote>“A life saver when it came time to care for my parents 24/7. The kindness and updates gave us peace of mind.”</blockquote>
+        <figcaption>— P. (Family Client)</figcaption>
+      </figure>
+      <figure class="testi">
+        <div class="stars">★★★★★</div>
+        <blockquote>“Wonderful care. Timely, trustworthy and excellent care of my Mom. Great experience!!”</blockquote>
+        <figcaption>— Tina Schoeneberger</figcaption>
+      </figure>
+      <figure class="testi">
+        <div class="stars">★★★★★</div>
+        <blockquote>“Just what we needed at just the right time. Caregivers were A+, personable, and compassionate — they became part of the family.”</blockquote>
+        <figcaption>— Kathy C.</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap two">
+    <div>
+      <h2>Credentials & Compliance</h2>
+      <ul>
+        <li>Workers’ comp • General & professional liability • Bonded & insured</li>
+        <li>Background checks • Health screening • 6-month reviews</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>Contact</h2>
+      <p><strong>24/7 Line:</strong> <a href="tel:+14847194146">(484) 719-4146</a><br>
+         <strong>Email:</strong> <a href="mailto:kylefischl@independentkareblazers.com">kylefischl@independentkareblazers.com</a></p>
+      <p><a class="btn" href="https://form.jotform.com/252675979187075" target="_blank" rel="noopener">Refer us</a></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  © KareBlazers — Discreet Support. Steady Presence.
+</footer>
+
+<script>
+  // keep only one <details> open per accordion group
+  document.querySelectorAll('.accordion').forEach(group=>{
+    group.addEventListener('click', e=>{
+      const el = e.target.closest('details');
+      if(!el) return;
+      group.querySelectorAll('details[open]').forEach(openEl=>{
+        if(openEl!==el) openEl.removeAttribute('open');
+      });
+    });
+  });
+
+  // Make statbar pills behave like buttons (scroll to Contact)
+  document.querySelectorAll('.statbar .pill[data-scroll]').forEach(el=>{
+    const go = ()=>{
+      const target = document.querySelector(el.getAttribute('data-scroll'));
+      if(target) target.scrollIntoView({behavior:'smooth', block:'start'});
+    };
+    el.addEventListener('click', go);
+    el.addEventListener('keydown', e=>{
+      if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }
+    });
+  });
+</script> </body>
+</html>
